@@ -48,7 +48,6 @@ async function main() {
 			'@hyzyla/pdfium',
 			'sharp',
 		],
-		noExternal: ['cfb'],
 		define: { __KORDOC_VERSION__: JSON.stringify(pkg.version) },
 	});
 

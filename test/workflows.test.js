@@ -8,7 +8,7 @@ test('publishes generated version tags through the npm workflow', () => {
 
 	assert.match(update, /gh workflow run publish\.yml/);
 	assert.match(publish, /id-token: write/);
-	assert.match(publish, /NODE_AUTH_TOKEN: \$\{\{ secrets\.NPM_TOKEN \}\}/);
-	assert.match(publish, /npm publish --provenance/);
+	assert.doesNotMatch(publish, /NPM_TOKEN|NODE_AUTH_TOKEN/);
+	assert.match(publish, /run: npm publish/);
 	assert.match(publish, /RELEASE_TAG/);
 });

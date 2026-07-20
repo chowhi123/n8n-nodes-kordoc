@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-kordoc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n community node for converting HWP, HWPX, PDF, and Office documents to Markdown with KorDoc",
   "license": "MIT",
   "homepage": "https://github.com/chowhi123/n8n-nodes-kordoc#readme",
@@ -42,6 +42,7 @@
     ]
   },
   "dependencies": {
+    "cfb": "1.2.2",
     "kordoc": "git+https://github.com/chrisryugj/kordoc.git"
   },
   "devDependencies": {

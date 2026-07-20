@@ -3,6 +3,7 @@ const test = require('node:test');
 
 const { KorDoc } = require('../dist/nodes/KorDoc/KorDoc.node.js');
 const { parse } = require('../dist/vendor/kordoc/index.cjs');
+const pkg = require('../package.json');
 
 test('declares the n8n node contract', () => {
 	const node = new KorDoc();
@@ -15,6 +16,10 @@ test('bundles a callable KorDoc parser', async () => {
 	const result = await parse(Buffer.alloc(0));
 	assert.equal(result.success, false);
 	assert.equal(result.code, 'EMPTY_INPUT');
+});
+
+test('declares dependencies required by the bundled parser', () => {
+	assert.equal(pkg.dependencies.cfb, '1.2.2');
 });
 
 test('honors continueOnFail for missing binary input', async () => {
