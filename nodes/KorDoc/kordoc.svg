@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="KorDoc">
+  <path fill="#2f6fed" d="M14 4h25l11 11v45H14z"/>
+  <path fill="#fff" opacity=".85" d="M39 4v13h11z"/>
+  <path fill="none" stroke="#fff" stroke-linecap="round" stroke-width="4" d="M23 29h18M23 38h18M23 47h12"/>
+</svg>
