@@ -55,6 +55,19 @@ npm test
 
 빌드 결과는 `dist/`에 생성됩니다. `kordoc`는 GitHub upstream을 직접 참조하며, 매일 실행되는 GitHub Actions 워크플로가 새 커밋을 감지하면 패치 버전을 올리고 빌드한 뒤 커밋과 태그를 푸시합니다.
 
+## npm 배포
+
+`v0.1.0` 형식의 태그가 푸시되면 `.github/workflows/publish.yml`이 빌드와 테스트를 거쳐 npm에 provenance와 함께 배포합니다. 자동 KorDoc 업데이트가 만든 태그도 같은 워크플로를 호출합니다.
+
+첫 배포 전 npm에서 패키지 쓰기 권한이 있는 access token을 만들고, GitHub 저장소의 **Settings > Secrets and variables > Actions > Repository secrets**에 `NPM_TOKEN`이라는 이름으로 등록합니다. 워크플로는 이 secret을 `NODE_AUTH_TOKEN`으로만 주입하며 저장소 파일에는 기록하지 않습니다.
+
+수동 배포는 먼저 버전과 lockfile을 올리고 같은 버전의 태그를 푸시합니다.
+
+```bash
+npm version patch
+git push --follow-tags
+```
+
 ## 라이선스
 
 MIT

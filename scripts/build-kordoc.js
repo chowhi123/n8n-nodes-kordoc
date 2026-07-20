@@ -1,5 +1,5 @@
 const { execFileSync } = require('node:child_process');
-const { existsSync, readFileSync, rmSync } = require('node:fs');
+const { cpSync, existsSync, readFileSync, rmSync } = require('node:fs');
 const path = require('node:path');
 const { build } = require('tsup');
 
@@ -50,6 +50,13 @@ async function main() {
 		],
 		noExternal: ['cfb'],
 		define: { __KORDOC_VERSION__: JSON.stringify(pkg.version) },
+	});
+
+	for (const file of ['LICENSE', 'NOTICE']) {
+		cpSync(path.join(source, file), path.join(outDir, file));
+	}
+	cpSync(path.join(source, 'THIRD_PARTY'), path.join(outDir, 'THIRD_PARTY'), {
+		recursive: true,
 	});
 }
 

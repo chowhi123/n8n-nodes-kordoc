@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -17,14 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -49,6 +50,7 @@ jobs:
           npm test
 
       - name: Commit and tag
+        id: release
         if: steps.update.outputs.changed == 'true'
         shell: bash
         run: |
@@ -59,3 +61,10 @@ jobs:
           git commit -m "chore: update kordoc to ${VERSION}"
           git tag "v${VERSION}"
           git push origin "HEAD:${GITHUB_REF_NAME}" --follow-tags
+          echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release to npm
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish.yml --ref "$GITHUB_REF_NAME" -f tag="${{ steps.release.outputs.tag }}"
