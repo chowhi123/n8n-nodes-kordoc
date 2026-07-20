@@ -1,9 +1,9 @@
 const assert = require('node:assert/strict');
+const { readFileSync } = require('node:fs');
 const test = require('node:test');
 
 const { KorDoc } = require('../dist/nodes/KorDoc/KorDoc.node.js');
 const { parse } = require('../dist/vendor/kordoc/index.cjs');
-const pkg = require('../package.json');
 
 test('declares the n8n node contract', () => {
 	const node = new KorDoc();
@@ -18,8 +18,11 @@ test('bundles a callable KorDoc parser', async () => {
 	assert.equal(result.code, 'EMPTY_INPUT');
 });
 
-test('declares dependencies required by the bundled parser', () => {
-	assert.equal(pkg.dependencies.cfb, '1.2.2');
+test('bundles cfb without external module resolution', () => {
+	const bundle = readFileSync('dist/vendor/kordoc/index.cjs', 'utf8');
+	assert.doesNotMatch(bundle, /\brequire\d*\(\s*(['"])cfb\1\s*\)/);
+	assert.match(bundle, /require\("\.\/cfb\.cjs"\)/);
+	assert.doesNotThrow(() => require('../dist/vendor/kordoc/cfb.cjs'));
 });
 
 test('honors continueOnFail for missing binary input', async () => {

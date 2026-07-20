@@ -1,5 +1,5 @@
 const { execFileSync } = require('node:child_process');
-const { cpSync, existsSync, readFileSync, rmSync } = require('node:fs');
+const { cpSync, existsSync, readFileSync, rmSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 const { build } = require('tsup');
 
@@ -51,12 +51,29 @@ async function main() {
 		define: { __KORDOC_VERSION__: JSON.stringify(pkg.version) },
 	});
 
+	const cfbEntry = require.resolve('cfb', { paths: [path.join(root, 'node_modules', 'kordoc')] });
+	await build({
+		entry: { cfb: cfbEntry },
+		format: ['cjs'],
+		outDir,
+		outExtension: () => ({ js: '.cjs' }),
+		clean: false,
+		splitting: false,
+	});
+
+	const bundlePath = path.join(outDir, 'index.cjs');
+	const bundle = readFileSync(bundlePath, 'utf8');
+	const cfbRequire = /\brequire\d*\(\s*(['"])cfb\1\s*\)/g;
+	if (!cfbRequire.test(bundle)) throw new Error('KorDoc bundle no longer contains the expected cfb require');
+	writeFileSync(bundlePath, bundle.replace(cfbRequire, 'require("./cfb.cjs")'));
+
 	for (const file of ['LICENSE', 'NOTICE']) {
 		cpSync(path.join(source, file), path.join(outDir, file));
 	}
 	cpSync(path.join(source, 'THIRD_PARTY'), path.join(outDir, 'THIRD_PARTY'), {
 		recursive: true,
 	});
+	cpSync(path.join(path.dirname(cfbEntry), 'LICENSE'), path.join(outDir, 'THIRD_PARTY', 'cfb.LICENSE'));
 }
 
 main()
